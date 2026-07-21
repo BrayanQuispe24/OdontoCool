@@ -1,0 +1,61 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: odontocool_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_NAME: "OdontoCool"
+      APP_ENV: "local"
+      APP_DEBUG: "true"
+      APP_KEY: "base64:Gjp/erR1TKnknepD88Gtn46+N7rAIo+VtGNKtcjd9o0="
+      APP_URL: "http://localhost:8000"
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_DATABASE: "odontocool"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "secret_postgres_pass"
+      SESSION_DRIVER: "database"
+      QUEUE_CONNECTION: "database"
+      CACHE_STORE: "database"
+    volumes:
+      - app_storage:/var/www/storage/app
+      - app_logs:/var/www/storage/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - odontocool-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: odontocool_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "odontocool"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "secret_postgres_pass"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d odontocool" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - odontocool-network
+
+networks:
+  odontocool-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  app_storage:
+  app_logs:
