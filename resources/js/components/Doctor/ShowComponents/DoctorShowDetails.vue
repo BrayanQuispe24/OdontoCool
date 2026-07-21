@@ -13,6 +13,9 @@ const props = defineProps<{
     puedeEditarContratacion: boolean;
 }>();
 
+const form = props.form;
+const passwordForm = props.passwordForm;
+
 const emit = defineEmits<{
     'change-foto': [event: Event];
     'cambiar-password': [];
@@ -21,7 +24,10 @@ const emit = defineEmits<{
 const publicBase = import.meta.env.VITE_PUBLIC_BASE || '/';
 
 const assetUrl = (path: string | null | undefined): string | undefined => {
-    if (!path) return undefined;
+    if (!path) {
+        return undefined;
+    }
+
     if (
         path.startsWith('http://') ||
         path.startsWith('https://') ||
@@ -29,8 +35,10 @@ const assetUrl = (path: string | null | undefined): string | undefined => {
     ) {
         return path;
     }
+
     const base = publicBase.replace(/\/+$/, '');
     const cleanPath = path.replace(/^\/+/, '');
+
     return `${base}/${cleanPath}`;
 };
 </script>

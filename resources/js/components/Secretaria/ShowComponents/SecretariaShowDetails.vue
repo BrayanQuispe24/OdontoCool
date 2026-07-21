@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SecretariaShow } from '@/types/Secretaria';
 
-defineProps<{
+const props = defineProps<{
     form: any;
     passwordForm: any;
     editando: boolean;
@@ -12,6 +12,9 @@ defineProps<{
     tieneRol: (rol: string) => boolean;
     assetUrl: (path: string | null | undefined) => string | undefined;
 }>();
+
+const form = props.form;
+const passwordForm = props.passwordForm;
 
 const emit = defineEmits<{
     'change-photo': [event: Event];
