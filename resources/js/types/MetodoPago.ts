@@ -1,0 +1,7 @@
+export interface MetodoPago {
+    id_metodo_pago: number;
+    nombre: string;
+    descripcion?: string;
+    created_at?: string;
+    updated_at?: string;
+}
