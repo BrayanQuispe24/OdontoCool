@@ -22,25 +22,29 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(append: [
-            HandleInertiaRequests::class,
-            AddLinkHeadersForPreloadedAssets::class,
-        ]);
-        // con este middleware se puede controlar el acceso a rutas según los permisos del usuario
-        $middleware->alias([
-            'permiso' => PermisosMiddleware::class,
-        ]);
+    $middleware->web(append: [
+        HandleInertiaRequests::class,
+        AddLinkHeadersForPreloadedAssets::class,
+        ContadorVisitaPagina::class,
+    ]);
 
-        $middleware->web(append: [
-            HandleInertiaRequests::class,
-            AddLinkHeadersForPreloadedAssets::class,
-            ContadorVisitaPagina::class,
-        ]);
+    $middleware->alias([
+        'permiso' => PermisosMiddleware::class,
+    ]);
 
-        $middleware->validateCsrfTokens(except: [
-            'boleta-pago/callback/*',
-        ]);
-    })
+    $middleware->validateCsrfTokens(except: [
+        'boleta-pago/callback/*',
+    ]);
+
+    $middleware->trustProxies(
+        at: '*',
+        headers: Request::HEADER_X_FORWARDED_FOR
+            | Request::HEADER_X_FORWARDED_HOST
+            | Request::HEADER_X_FORWARDED_PORT
+            | Request::HEADER_X_FORWARDED_PROTO
+            | Request::HEADER_X_FORWARDED_AWS_ELB
+    );
+})
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->reportable(function (Throwable $e) {
             try {
